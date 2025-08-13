@@ -5,7 +5,7 @@ set -e
 echo "--- Health Check Begin ---"
 
 echo "Waiting for server to start..."
-sleep 10
+sleep 30
 
 echo "Send Request to http://localhost:8080/"
 RESPONSE=$(curl -s http://localhost:8080/)
