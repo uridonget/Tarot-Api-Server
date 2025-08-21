@@ -1,3 +1,5 @@
 fastapi
 uvicorn[standard]
 black
+google-generativeai
+python-dotenv

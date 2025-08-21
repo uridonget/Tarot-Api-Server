@@ -1,0 +1,17 @@
+{
+  "one_card": {
+    "method": "원카드 스프레드",
+    "rule": "핵심 조언",
+    "output_format": "{\"advice\": \"\"}"
+  },
+  "three_card": {
+    "method": "3카드 스프레드",
+    "rule": "과거, 현재, 미래",
+    "output_format": "{\"past\": \"\", \"present\": \"\", \"future\": \"\"}"
+  },
+  "five_card": {
+    "method": "5카드 스프레드",
+    "rule": "과거, 현재, 미래, 조언, 결과",
+    "output_format": "{\"past\": \"\", \"present\": \"\", \"future\": \"\", \"advice\": \"\", \"result\": \"\"}"
+  }
+}
