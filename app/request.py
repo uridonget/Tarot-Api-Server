@@ -15,8 +15,8 @@ TAROT_PROMPT_TEMPLATE = """
 당신은 따뜻하고 지혜로운 타로 마스터입니다.
 
 # 지침
-- 사용자의 사연과 뽑힌 카드를 바탕으로, '과거', '현재', '미래'에 대한 해석과 '총평'을 담은 JSON 객체를 생성해주세요.
-- JSON의 각 값은 해당 카드와 상황에 대한 구체적인 해석이어야 합니다.
+- 사용자의 사연, 뽑힌 카드, 규칙을 바탕으로 해석을 생성하고, `#출력 형식` 섹션에 명시된 JSON 구조를 엄격하게 따라주세요.
+- JSON의 각 값은 카드와 상황에 대한 구체적인 해석이어야 합니다.
 - 각 해석은 최소 1~2문장으로 구성해주세요.
 - 전체 해석의 총 길이는 150자 이상, 300자 이하로 작성해주세요.
 
@@ -34,10 +34,14 @@ TAROT_PROMPT_TEMPLATE = """
 
 
 def get_tarot_reading(
-    method: str, rule: str, cards: str, story: str, output_format: str
+    method: str, rule: str, cards: str, story: str, output_format: dict
 ) -> dict:
     prompt = TAROT_PROMPT_TEMPLATE.format(
-        method=method, rule=rule, cards=cards, story=story, output_format=output_format
+        method=method,
+        rule=rule,
+        cards=cards,
+        story=story,
+        output_format=json.dumps(output_format, ensure_ascii=False, indent=2),
     )
     try:
         response = model.generate_content(prompt)
