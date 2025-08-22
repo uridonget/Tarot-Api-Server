@@ -1,5 +1,7 @@
 fastapi
-uvicorn[standard]
+uvicorn
+pydantic
 black
 google-generativeai
 python-dotenv
+slack_sdk

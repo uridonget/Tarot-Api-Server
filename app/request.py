@@ -12,7 +12,7 @@ model = genai.GenerativeModel("gemini-1.5-flash")
 
 TAROT_PROMPT_TEMPLATE = """
 # 역할
-당신은 따뜻하고 지혜로운 타로 마스터입니다.
+당신은 냉철하고 지혜로운 타로 마스터입니다.
 
 # 지침
 - 사용자의 사연, 뽑힌 카드, 규칙을 바탕으로 해석을 생성하고, `#출력 형식` 섹션에 명시된 JSON 구조를 엄격하게 따라주세요.

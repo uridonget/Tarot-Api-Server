@@ -28,16 +28,44 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/api-server:latest .
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true # Load the image into the local Docker daemon
+          tags: tarot-service:latest
 
-      - name: Run Docker container
-        run: docker run -d -p 8080:8080 --name api-server-container ${{ secrets.DOCKERHUB_USERNAME }}/api-server:latest
+      - name: Run Docker container for testing
+        run: docker run -d -p 8000:8000 --name api-server-container -e GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} -e SLACK_BOT_TOKEN=${{ secrets.SLACK_BOT_TOKEN }} tarot-service:latest
 
       - name: Run health check
         run: |
+          sleep 10 # Give the container time to start
           chmod +x tests/health_check.sh
           ./tests/health_check.sh
 
       - name: Show container logs
         if: always()
         run: docker logs api-server-container
+
+  push-to-hub:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/api-server:latest
