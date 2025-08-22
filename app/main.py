@@ -1,7 +1,7 @@
 import json
 import random
 import os
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, BackgroundTasks
 from pydantic import BaseModel
 from app.request import get_tarot_reading
 from slack_sdk import WebClient
@@ -102,8 +102,27 @@ def create_tarot_reading_api(request: TarotReadingRequest):
         raise HTTPException(status_code=500, detail=f"Failed to get tarot reading: {e}")
 
 
+def process_slack_mention(event: dict):
+    """Processes a Slack mention event in the background."""
+    channel_id = event.get("channel")
+    user_text = event.get("text", "").split(">", 1)[-1].strip()
+
+    try:
+        # Use a default reading type for Slack, e.g., "five_card"
+        result = _generate_tarot_reading(story=user_text, config_key="five_card")
+
+        # Format and send the message to Slack
+        slack_message = format_reading_for_slack(result)
+        slack_client.chat_postMessage(channel=channel_id, text=slack_message)
+
+    except Exception as e:
+        # Notify user in case of an error
+        error_message = f"죄송합니다, 타로점을 보는 중 오류가 발생했어요: {e}"
+        slack_client.chat_postMessage(channel=channel_id, text=error_message)
+
+
 @app.post("/slack/events")
-async def slack_events(request: Request):
+async def slack_events(request: Request, background_tasks: BackgroundTasks):
     body = await request.json()
 
     # Slack URL Verification Challenge
@@ -117,20 +136,7 @@ async def slack_events(request: Request):
         if event.get("bot_id"):
             return {"status": "ok"}
 
-        channel_id = event.get("channel")
-        user_text = event.get("text", "").split(">", 1)[-1].strip()
-
-        try:
-            # Use a default reading type for Slack, e.g., "three_card"
-            result = _generate_tarot_reading(story=user_text, config_key="five_card")
-
-            # Format and send the message to Slack
-            slack_message = format_reading_for_slack(result)
-            slack_client.chat_postMessage(channel=channel_id, text=slack_message)
-
-        except Exception as e:
-            # Notify user in case of an error
-            error_message = f"죄송합니다, 타로점을 보는 중 오류가 발생했어요: {e}"
-            slack_client.chat_postMessage(channel=channel_id, text=error_message)
+        # Acknowledge the event immediately and process in the background
+        background_tasks.add_task(process_slack_mention, event)
 
     return {"status": "ok"}
