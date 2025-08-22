@@ -122,7 +122,7 @@ async def slack_events(request: Request):
 
         try:
             # Use a default reading type for Slack, e.g., "three_card"
-            result = _generate_tarot_reading(story=user_text, config_key="three_card")
+            result = _generate_tarot_reading(story=user_text, config_key="five_card")
 
             # Format and send the message to Slack
             slack_message = format_reading_for_slack(result)
