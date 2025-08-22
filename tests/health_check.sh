@@ -8,7 +8,7 @@ echo "Waiting for server to start..."
 sleep 30
 
 echo "Send Request to http://localhost:8080/"
-RESPONSE=$(curl -s http://localhost:8080/)
+RESPONSE=$(curl -s http://localhost:8000/)
 EXPECTED_RESPONSE='{"status":"ok"}'
 
 echo "Received response: $RESPONSE"
