@@ -18,3 +18,9 @@ Gemini API 기반 자연어 처리
 웹 서비스 (REST API / Web UI)
 
 Slack Bot
+
+## Blog
+
+https://ddingddang.tistory.com/82
+
+https://ddingddang.tistory.com/83
